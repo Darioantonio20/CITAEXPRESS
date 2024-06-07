@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterServiceProvider extends StatefulWidget {
+  const RegisterServiceProvider({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _RegisterServiceProviderState createState() => _RegisterServiceProviderState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _serviceController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   @override
   void dispose() {
@@ -19,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _serviceController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -30,14 +34,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center, // Centrar el contenido
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'REGISTRO',
-                style: TextStyle(
-                  color: Colors.teal,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              const Center(
+                child: Text(
+                  'REGISTRO DE PROVEEDOR DE SERVICIOS',
+                  style: TextStyle(
+                    color: Colors.teal,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -127,6 +134,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
               ),
               const SizedBox(height: 20),
+              TextField(
+                controller: _serviceController,
+                decoration: InputDecoration(
+                  labelText: 'Servicio',
+                  labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromRGBO(11, 143, 172, 1.0),
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: 'Ingrese el servicio',
+                ),
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _locationController,
+                decoration: InputDecoration(
+                  labelText: 'Ubicación',
+                  labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: 'Ingrese la ubicación',
+                ),
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   // Acción para registrarse
@@ -134,7 +178,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   final phone = _phoneController.text;
                   final email = _emailController.text;
                   final password = _passwordController.text;
-                  print('Nombre: $fullName, Teléfono: $phone, Correo: $email, Contraseña: $password');
+                  final service = _serviceController.text;
+                  final location = _locationController.text;
+                  print('Nombre: $fullName, Teléfono: $phone, Correo: $email, Contraseña: $password, Servicio: $service, Ubicación: $location');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(11, 143, 172, 1.0),
@@ -155,8 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const Text('¿Ya tienes una cuenta?'),
                   TextButton(
                     onPressed: () {
-                      // Navegar a la vista de inicio de sesión
-                      Navigator.of(context).pushNamed('/login');
+                      Navigator.of(context).pushNamed('/');
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0),
@@ -165,24 +210,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/registerServiceProvider');
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0),            
-                    ),
-                    child: const Text('¡Registrarte como provedor de servicios!',
-                      style: TextStyle(
-                      fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ), 
             ],
           ),
         ),
