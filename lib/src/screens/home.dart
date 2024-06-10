@@ -125,7 +125,12 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Todos los doctores', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  TextButton(onPressed: () {}, child: Text('Ver todos')),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/allItems'); // Navega a la nueva vista
+                    },
+                    child: Text('Ver todos'),
+                  ),
                 ],
               ),
               _buildDoctorCard(
