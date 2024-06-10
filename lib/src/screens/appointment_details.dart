@@ -9,14 +9,13 @@ class AppointmentDetailsScreen extends StatefulWidget {
 
 class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
   String selectedTime = '11.00 AM'; // Valor predeterminado seleccionado
+  String selectedDate = 'Lun. 4'; // Valor predeterminado seleccionado
 
   void _selectTime(String time) {
     setState(() {
       selectedTime = time;
     });
   }
-
-  String selectedDate = 'Lun. 4'; // Valor predeterminado seleccionado
 
   void _selectDate(String date) {
     setState(() {
@@ -86,12 +85,12 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Detallles',
+              'Detalles',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Un dentista es un profesional de la salud encargado de la prevención, diagnóstico y tratamiento de enfermedades y condiciones de los dientes y la cavidad oral. Realiza procedimientos como limpiezas, empastes, extracciones y ortodoncia para mantener la salud bucal de sus pacientes. ',
+              'Un dentista es un profesional de la salud encargado de la prevención, diagnóstico y tratamiento de enfermedades y condiciones de los dientes y la cavidad oral. Realiza procedimientos como limpiezas, empastes, extracciones y ortodoncia para mantener la salud bucal de sus pacientes.',
             ),
             const SizedBox(height: 24),
             Row(
@@ -152,7 +151,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Acción para el botón Reservar cita
+                  Navigator.of(context).pushNamed('/select_date_and_time');
                 },
                 child: const Text(
                   'Reservar cita',
