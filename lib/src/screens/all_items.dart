@@ -36,6 +36,7 @@ class AllItemsScreen extends StatelessWidget {
                     'Dr. Jesús Ruíz',
                     'La salud de cada uno de mis pacientes, es vital para ayudar a recuperarse y tener una vida sana.',
                     5.0,
+                    context, // Pasa el contexto aquí
                   ),
                   // Puedes agregar más _buildDoctorCard aquí conforme lo necesites
                 ],
@@ -47,7 +48,7 @@ class AllItemsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDoctorCard(String name, String description, double rating) {
+  Widget _buildDoctorCard(String name, String description, double rating, BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       padding: const EdgeInsets.all(16.0),
@@ -90,14 +91,14 @@ class AllItemsScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              // Acción para el botón Reservar
+              Navigator.pushNamed(context, '/appointment_details');
             },
             child: const Text(
-              'Reservar', 
-              style: TextStyle(color: Colors.white), 
-              ),
+              'Reservar',
+              style: TextStyle(color: Colors.white),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0B8FAC),
+              backgroundColor: Color(0xFF0B8FAC),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

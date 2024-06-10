@@ -127,9 +127,12 @@ class HomeScreen extends StatelessWidget {
                   Text('Todos los doctores', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/allItems'); // Navega a la nueva vista
+                      Navigator.pushNamed(context, '/all_items'); // Navega a la nueva vista
                     },
-                    child: Text('Ver todos'),
+                    child: Text(
+                      'Ver todos',
+                      style: TextStyle(color: Color.fromARGB(255, 23, 162, 236)),
+                      ),
                   ),
                 ],
               ),
