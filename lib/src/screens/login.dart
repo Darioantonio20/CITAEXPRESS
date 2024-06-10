@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text(
                 'BIENVENIDO',
                 style: TextStyle(
-                  color: Color.fromRGBO(0, 150, 136, 1),
+                  color: Color(0xFF0B8FAC),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -58,13 +58,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Correo',
-                    labelStyle: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromRGBO(11, 143, 172, 1.0),
+                      borderSide: const BorderSide(
+                        color: Color.fromRGBO(11, 143, 172, 1.0),
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Acción para iniciar sesión
+                  Navigator.of(context).pushNamed('/home');
                   final email = _emailController.text;
                   final password = _passwordController.text;
                   print('Correo: $email, Contraseña: $password');

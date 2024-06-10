@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/src/screens/citaexpress.dart';
 import 'package:flutter_application_1/src/screens/login.dart';
 import 'package:flutter_application_1/src/screens/register.dart';
-import 'package:flutter_application_1/src/screens/register_service_provider.dart'; // Importa el nuevo formulario
+import 'package:flutter_application_1/src/screens/register_service_provider.dart';
+import 'package:flutter_application_1/src/screens/home.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const CounterScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/registerServiceProvider': (context) => const RegisterServiceProvider(), // Define la nueva ruta
+        '/registerServiceProvider': (context) => const RegisterServiceProvider(), 
+        '/home': (context) => const HomeScreen(), 
       },
     );
   }

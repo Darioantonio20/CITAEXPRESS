@@ -50,6 +50,7 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
             style: TextStyle(
               fontSize: 50,
               fontWeight: FontWeight.w500,
+              color:Color(0xFF0B8FAC), 
             ),
           ),
         ),

@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const Text(
                 'REGISTRO',
                 style: TextStyle(
-                  color: Colors.teal,
+                  color: Color(0xFF0B8FAC),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
