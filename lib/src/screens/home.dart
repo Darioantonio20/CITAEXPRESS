@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.teal[100],
+                  color: Color.fromRGBO(11, 143, 172, 1.0),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -84,18 +84,18 @@ class HomeScreen extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.teal[900])),
+                                  color: const Color.fromARGB(255, 248, 248, 248))),
                           SizedBox(height: 8),
                           Text(
                               '¡Ahorra tiempo, encuentra servicios y evita filas con nuestra app!',
-                              style: TextStyle(color: Colors.teal[800])),
+                              style: TextStyle(color: const Color.fromARGB(255, 225, 226, 226))),
                         ],
                       ),
                     ),
                     Container(
                       width: 60,
                       height: 60,
-                      color: Colors.grey[300], // Fondo gris como marcador de posición
+                      color: Colors.grey[300], 
                     ),
                   ],
                 ),
@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
               Text('Servicios', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
              Container(
-                height: 100, // Altura del carrusel
+                height: 100, 
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
@@ -181,7 +181,7 @@ class HomeScreen extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 4.0),
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.teal[300],
+          color: Color.fromRGBO(11, 143, 172, 1.0),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(

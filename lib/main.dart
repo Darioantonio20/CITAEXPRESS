@@ -6,7 +6,8 @@ import 'package:flutter_application_1/src/screens/register_service_provider.dart
 import 'package:flutter_application_1/src/screens/home.dart';
 import 'package:flutter_application_1/src/screens/appointment_details.dart'; 
 import 'package:flutter_application_1/src/screens/all_items.dart'; 
-import 'package:flutter_application_1/src/screens/select_date_and_time.dart'; 
+import 'package:flutter_application_1/src/screens/select_date_and_time.dart';
+import 'package:flutter_application_1/src/screens/payment_screen.dart'; // Importa la nueva pantalla de pago
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/appointment_details': (context) => const AppointmentDetailsScreen(),
         '/all_items': (context) => const AllItemsScreen(),
         '/select_date_and_time': (context) => const SelectDateAndTimeScreen(),
+        '/payment': (context) => const PaymentScreen(), 
       },
     );
   }

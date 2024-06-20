@@ -29,15 +29,22 @@ class _SelectDateAndTimeScreenState extends State<SelectDateAndTimeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CalendarDatePicker(
-              initialDate: selectedDate,
-              firstDate: DateTime(DateTime.now().year, DateTime.now().month - 1),
-              lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1),
-              onDateChanged: (date) {
-                setState(() {
-                  selectedDate = date;
-                });
-              },
+            Theme(
+              data: ThemeData(
+                colorScheme: ColorScheme.light(
+                  primary:  Color.fromRGBO(11, 143, 172, 1.0), // Color para la fecha seleccionada
+                ),
+              ),
+              child: CalendarDatePicker(
+                initialDate: selectedDate,
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month - 1),
+                lastDate: DateTime(DateTime.now().year, DateTime.now().month + 1),
+                onDateChanged: (date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 24),
             Row(
@@ -49,7 +56,10 @@ class _SelectDateAndTimeScreenState extends State<SelectDateAndTimeScreen> {
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Ver todas'),
+                  child: Text(
+                    'Ver todas',
+                    style: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                  ),
                 ),
               ],
             ),
@@ -70,14 +80,14 @@ class _SelectDateAndTimeScreenState extends State<SelectDateAndTimeScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Acción para el botón Reservar cita
+                  Navigator.of(context).pushNamed('/payment');
                 },
                 child: const Text(
                   'Reservar cita',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Color.fromRGBO(11, 143, 172, 1.0),
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -99,7 +109,7 @@ class _SelectDateAndTimeScreenState extends State<SelectDateAndTimeScreen> {
         margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.teal : Colors.grey[200],
+          color: isSelected ?Color.fromRGBO(11, 143, 172, 1.0) : Colors.grey[200],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(

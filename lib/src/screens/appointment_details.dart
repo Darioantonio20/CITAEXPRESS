@@ -51,7 +51,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     ),
                     Text(
                       'Dentista',
-                      style: TextStyle(color: Colors.teal),
+                      style: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), 
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -60,7 +60,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                     ),
                     Text(
                       '\$120.00',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(11, 143, 172, 1.0)), 
                     ),
                   ],
                 ),
@@ -102,7 +102,10 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Ver todos'),
+                  child: Text(
+                    'Ver todos',
+                    style: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    ),
                 ),
               ],
             ),
@@ -129,7 +132,9 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('Ver todos'),
+                  child: Text(
+                    'Ver todos',
+                    style: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0))),
                 ),
               ],
             ),
@@ -158,7 +163,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Color.fromRGBO(11, 143, 172, 1.0),
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -180,7 +185,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
         margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.teal : Colors.grey[200],
+          color: isSelected ?Color.fromRGBO(11, 143, 172, 1.0) : Colors.grey[200],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
@@ -201,7 +206,7 @@ class _AppointmentDetailsScreenState extends State<AppointmentDetailsScreen> {
         margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.teal : Colors.grey[200],
+          color: isSelected ? Color.fromRGBO(11, 143, 172, 1.0) : Colors.grey[200],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
