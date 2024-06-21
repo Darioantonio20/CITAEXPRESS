@@ -11,9 +11,9 @@ class HomeScreen extends StatelessWidget {
         child: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          automaticallyImplyLeading: false, // Esto elimina la flecha de regreso
+          automaticallyImplyLeading: false,
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(top: 40.0), // Ajusta el padding superior según sea necesario
+            padding: const EdgeInsets.only(top: 40.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -23,7 +23,7 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: Colors.grey[300], // Fondo gris como marcador de posición
+                        backgroundColor: Colors.grey[300],
                       ),
                       SizedBox(width: 10),
                       Column(
@@ -36,7 +36,9 @@ class HomeScreen extends StatelessWidget {
                       Spacer(),
                       IconButton(
                         icon: Icon(Icons.notifications, color: Colors.black),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/notifications');
+                        },
                       ),
                     ],
                   ),
@@ -127,7 +129,7 @@ class HomeScreen extends StatelessWidget {
                   Text('Todos los doctores', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/all_items'); // Navega a la nueva vista
+                      Navigator.pushNamed(context, '/all_items'); 
                     },
                     child: Text(
                       'Ver todos',
@@ -165,6 +167,13 @@ class HomeScreen extends StatelessWidget {
           label: 'Perfil',
         ),
       ],
+      onTap: (index) {
+        if (index == 2) {
+          Navigator.pushNamed(context, '/messages_screen');
+        } else if (index == 3) {
+          Navigator.pushNamed(context, '/profile_screen');
+        }
+      },
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.black,
       selectedLabelStyle: TextStyle(color: Colors.black),
@@ -211,7 +220,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: Colors.grey[300], // Fondo gris como marcador de posición
+            backgroundColor: Colors.grey[300], 
           ),
           SizedBox(width: 16),
           Expanded(
