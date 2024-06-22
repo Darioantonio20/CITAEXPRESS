@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +18,68 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loginUser() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    const url = 'http://localhost:8080/api/auth/login'; // URL correcta
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'correo': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Si el servidor devuelve una respuesta 200 OK, parsea el JSON
+        final responseBody = jsonDecode(response.body);
+        print('Inicio de sesión exitoso: $responseBody');
+        // Mostrar una alerta de éxito y redirigir a la vista de home
+        _showAlertDialog('Inicio de sesión exitoso', 'El usuario ha iniciado sesión correctamente.', true);
+      } else {
+        // Si el servidor no devuelve una respuesta 200 OK, lanza un error.
+        print('Error en el inicio de sesión: ${response.body}');
+        // Mostrar una alerta de error
+        _showAlertDialog('Error en el inicio de sesión', 'Usuario no registrado o verificar los campos.', false);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      // Mostrar una alerta de error
+      _showAlertDialog('Error en la solicitud', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
+    }
+  }
+
+  void _showAlertDialog(String title, String message, bool success) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (success) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                } else {
+                  Navigator.of(context).pushReplacementNamed('/register');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -55,44 +118,39 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Correo',
-                    labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(11, 143, 172, 1.0),
-                      ),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    hintText: 'Ingrese su correo',
-                  ),
-                  style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
-                ),
-
-              const SizedBox(height: 20),
-             TextField(
-                controller: _passwordController,
-                obscureText: true,
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  labelStyle: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                  labelText: 'Correo',
+                  labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                    borderSide: const BorderSide(
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
+                  hintText: 'Ingrese su correo',
+                ),
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Contraseña',
+                  labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    borderRadius: BorderRadius.circular(10.0)),
                   hintText: 'Ingrese su contraseña',
                   suffixIcon: const Icon(Icons.visibility_off),
                 ),
-                style: TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
               ),
               const SizedBox(height: 10),
               Align(
@@ -109,12 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/home');
-                  final email = _emailController.text;
-                  final password = _passwordController.text;
-                  print('Correo: $email, Contraseña: $password');
-                },
+                onPressed: _loginUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(11, 143, 172, 1.0),
                   padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -130,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
               const Text('ó', style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 20),
-               Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(

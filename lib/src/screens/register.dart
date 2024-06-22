@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +22,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _registerUser() async {
+    final fullName = _fullNameController.text;
+    final phone = _phoneController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    const url = 'http://localhost:8080/api/user/'; // Cambia esta URL según tu configuración
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'nombre': fullName,
+          'numeroTel': phone,
+          'correo': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Si el servidor devuelve una respuesta 200 OK, parsea el JSON
+        final responseBody = jsonDecode(response.body);
+        print('Registro exitoso: $responseBody');
+        // Mostrar una alerta de éxito y redirigir a la vista de login
+        _showAlertDialog('Registro exitoso', 'El usuario se registró correctamente.', true);
+      } else {
+        // Si el servidor no devuelve una respuesta 200 OK, lanza un error.
+        print('Error en el registro: ${response.body}');
+        // Mostrar una alerta de error
+        _showAlertDialog('Error en el registro', 'Hubo un problema al registrar el usuario. Inténtalo de nuevo.', false);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      // Mostrar una alerta de error
+      _showAlertDialog('Error en la solicitud', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
+    }
+  }
+
+  void _showAlertDialog(String title, String message, bool success) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (success) {
+                  Navigator.of(context).pushReplacementNamed('/login');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -59,8 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   hintText: 'Ingrese su nombre completo',
@@ -74,12 +139,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Número de teléfono',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   hintText: 'Ingrese su número de teléfono',
@@ -93,12 +156,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Correo',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   hintText: 'Ingrese su correo',
@@ -113,14 +174,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Contraseña',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    borderRadius: BorderRadius.circular(10.0)),
                   hintText: 'Ingrese su contraseña',
                   suffixIcon: const Icon(Icons.visibility_off),
                 ),
@@ -129,12 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Acción para registrarse
-                  final fullName = _fullNameController.text;
-                  final phone = _phoneController.text;
-                  final email = _emailController.text;
-                  final password = _passwordController.text;
-                  print('Nombre: $fullName, Teléfono: $phone, Correo: $email, Contraseña: $password');
+                  _registerUser();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(11, 143, 172, 1.0),
@@ -159,8 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.of(context).pushNamed('/login');
                     },
                     style: TextButton.styleFrom(
-                      foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0)),
                     child: const Text('Inicia sesión'),
                   ),
                 ],
@@ -173,9 +225,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.of(context).pushNamed('/registerServiceProvider');
                     },
                     style: TextButton.styleFrom(
-                      foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0),            
-                    ),
-                    child: const Text('¡Registrarte como provedor de servicios!',
+                      foregroundColor: const Color.fromRGBO(11, 143, 172, 1.0)),            
+                    child: const Text('¡Registrarte como proveedor de servicios!',
                       style: TextStyle(
                       fontSize: 15,
                       ),

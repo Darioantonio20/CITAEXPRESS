@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterServiceProvider extends StatefulWidget {
   const RegisterServiceProvider({super.key});
@@ -26,6 +28,71 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
     super.dispose();
   }
 
+  Future<void> _registerProvider() async {
+    final fullName = _fullNameController.text;
+    final phone = _phoneController.text;
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    final service = _serviceController.text;
+    final location = _locationController.text;
+
+    const url = 'http://localhost:8080/api/providers'; // URL correcta
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'nameProvider': fullName,
+          'numberTelProvider': phone,
+          'emailProvider': email,
+          'passwordProvider': password,
+          'serviceProvider': service,
+          'ubication': location,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Registro exitoso
+        final responseBody = jsonDecode(response.body);
+        print('Registro exitoso: $responseBody');
+        _showAlertDialog('Registro exitoso', 'El proveedor de servicios ha sido registrado correctamente.', true);
+      } else {
+        // Error en el registro
+        print('Error en el registro: ${response.body}');
+        _showAlertDialog('Error en el registro', 'Hubo un problema con el registro. Inténtalo de nuevo.', false);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      _showAlertDialog('Error en la solicitud', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
+    }
+  }
+
+  void _showAlertDialog(String title, String message, bool success) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (success) {
+                  Navigator.of(context).pushReplacementNamed('/');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +101,7 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Centrar el contenido
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Center(
@@ -85,8 +152,7 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   hintText: 'Ingrese su número de teléfono',
@@ -104,8 +170,7 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   hintText: 'Ingrese su correo',
@@ -120,14 +185,11 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
                   labelText: 'Contraseña',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    borderRadius: BorderRadius.circular(10.0)),
                   hintText: 'Ingrese su contraseña',
                   suffixIcon: const Icon(Icons.visibility_off),
                 ),
@@ -140,14 +202,11 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
                   labelText: 'Servicio',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color.fromRGBO(11, 143, 172, 1.0),
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                      color: Color.fromRGBO(11, 143, 172, 1.0)),
+                    borderRadius: BorderRadius.circular(10.0)),
                   hintText: 'Ingrese el servicio',
                 ),
                 style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
@@ -159,29 +218,18 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
                   labelText: 'Ubicación',
                   labelStyle: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
                       color: Color.fromRGBO(11, 143, 172, 1.0)),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10.0)),
                   hintText: 'Ingrese la ubicación',
                 ),
                 style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  // Acción para registrarse
-                  final fullName = _fullNameController.text;
-                  final phone = _phoneController.text;
-                  final email = _emailController.text;
-                  final password = _passwordController.text;
-                  final service = _serviceController.text;
-                  final location = _locationController.text;
-                  print('Nombre: $fullName, Teléfono: $phone, Correo: $email, Contraseña: $password, Servicio: $service, Ubicación: $location');
-                },
+                onPressed: _registerProvider,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromRGBO(11, 143, 172, 1.0),
                   padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
