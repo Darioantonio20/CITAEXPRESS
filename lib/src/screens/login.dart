@@ -48,39 +48,56 @@ class _LoginScreenState extends State<LoginScreen> {
         // Si el servidor no devuelve una respuesta 200 OK, lanza un error.
         print('Error en el inicio de sesión: ${response.body}');
         // Mostrar una alerta de error
-        _showAlertDialog('Error en el inicio de sesión', 'Usuario no registrado o verificar los campos.', false);
+        _showAlertDialog('Error', 'Usuario no registrado o verificar los campos.', false);
       }
     } catch (e) {
       print('Error en la solicitud: $e');
       // Mostrar una alerta de error
-      _showAlertDialog('Error en la solicitud', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
+      _showAlertDialog('Error', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
     }
   }
 
   void _showAlertDialog(String title, String message, bool success) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (success) {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                } else {
-                  Navigator.of(context).pushReplacementNamed('/register');
-                }
-              },
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              success ? Icons.check_circle : Icons.error,
+              color: success ? Colors.green : Colors.red,
+            ),
+            SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(
+                color: success ? Colors.green : Colors.red,
+              ),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: success ? Colors.green : Colors.red,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (success) {
+                Navigator.of(context).pushReplacementNamed('/home');
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
