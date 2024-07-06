@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    const url = 'http://localhost:8080/api/auth/login'; // URL correcta
+    const url = 'http://52.44.178.25:8080/api/auth/login'; // URL correcta
 
     try {
       final response = await http.post(
@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'password': password,
         }),
       );
-
+     
       if (response.statusCode == 200) {
         // Si el servidor devuelve una respuesta 200 OK, parsea el JSON
         final responseBody = jsonDecode(response.body);
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       print('Error en la solicitud: $e');
       // Mostrar una alerta de error
-      _showAlertDialog('Error', 'Hubo un problema con la solicitud. Inténtalo de nuevo.', false);
+      _showAlertDialog('Error', 'Hubo un problema con la solicitud. Inténtalo de nuevo. $e', false);
     }
   }
 

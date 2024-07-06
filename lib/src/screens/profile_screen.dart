@@ -1,8 +1,69 @@
-import 'package:flutter/material.dart';
+// profile_screen.dart
 import 'package:flutter_application_1/src/screens/notifications_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String nombreUsuario = 'Cargando...';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    const url = 'http://52.44.178.25:8080/api/user'; // URL para obtener los datos del usuario
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        setState(() {
+          nombreUsuario = responseBody['nombre'];
+        });
+      } else {
+        print('Error al obtener datos del usuario: ${response.body}');
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+    }
+  }
+
+  void _showPersonalDetailsAlert() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Detalles personales'),
+          content: Text('¿Desea cambiar los campos de su registro?'),
+          actions: [
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Sí'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Navegar a la vista de edición de detalles personales
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: Colors.grey,
             ),
             SizedBox(height: 10),
-            Text('Samuel Escobar', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(nombreUsuario, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             _buildProfileOption(context, Icons.notifications, 'Notificaciones', () {
               // Navega a NotificationsScreen cuando se toca "Notificaciones"
@@ -32,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => NotificationsScreen()),
               );
             }),
-            _buildProfileOption(context, Icons.person, 'Detalles personales', () {}),
+            _buildProfileOption(context, Icons.person, 'Detalles personales', _showPersonalDetailsAlert),
             _buildProfileOption(context, Icons.location_on, 'Ubicación', () {}),
             _buildProfileOption(context, Icons.payment, 'Método de pago', () {}),
             _buildProfileOption(context, Icons.settings, 'Configuración', () {}),
