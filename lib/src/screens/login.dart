@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    const url = 'http://52.44.178.25:8080/api/auth/login'; // URL correcta
+    const url = 'http://10.0.2.2:8080/api/auth/login'; // URL correcta
 
     try {
       final response = await http.post(
@@ -39,8 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
       );
      
       if (response.statusCode == 200) {
+
+       final responseBody = jsonDecode(response.body);
+       final String token = responseBody['token'];
+
+  // Obtén una instancia de SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+
+  // Guarda el token usando SharedPreferences
+        await prefs.setString('token', token);
         // Si el servidor devuelve una respuesta 200 OK, parsea el JSON
-        final responseBody = jsonDecode(response.body);
+       
         print('Inicio de sesión exitoso: $responseBody');
         // Mostrar una alerta de éxito y redirigir a la vista de home
         _showAlertDialog('Inicio de sesión exitoso', 'El usuario ha iniciado sesión correctamente.', true);

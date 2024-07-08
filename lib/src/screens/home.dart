@@ -1,10 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+
+class _HomeScreenState extends State<HomeScreen> {
+  String userName = 'Cargando...'; // Valor inicial mientras se carga el nombre
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  _fetchUserName(); // Llama a _fetchUserName cada vez que las dependencias cambian
+}
+
+
+  Future<void> _fetchUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        print('El token no es válido');
+        return;
+      }
+      final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+      final String uid = payload['uid'];
+      final url = 'http://10.0.2.2:8080/api/user/$uid';
+
+      try {
+        final response = await http.get(Uri.parse(url), headers: {
+          'Authorization': 'Bearer $token',
+        });
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            userName = data['nombre']; // Actualiza el nombre del usuario
+          });
+        } else {
+          print('Error al obtener el nombre del usuario: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (ModalRoute.of(context)?.isCurrent == true) {
+      _fetchUserName(); // Se asegura de llamar a _fetchUserName solo si la pantalla está actualmente visible
+    }
+  }); 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(160.0),
@@ -30,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Hola', style: TextStyle(fontSize: 18, color: Colors.black)),
-                          Text('Darío Antonio', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                          Text(userName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
                         ],
                       ),
                       Spacer(),
@@ -183,6 +245,9 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+
+
 
   Widget _buildServiceButton(BuildContext context, String title) {
     return Expanded(
