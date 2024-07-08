@@ -36,7 +36,7 @@ class _RegisterServiceProviderState extends State<RegisterServiceProvider> {
     final service = _serviceController.text;
     final location = _locationController.text;
 
-    const url = 'http://10.0.2.2:8080/api/providers'; // URL correcta
+    const url = 'http://52.44.178.25:8080/api/providers'; // URL correcta
 
     try {
       final response = await http.post(

@@ -36,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
 
-      final url = 'http://10.0.2.2:8080/api/user/$uid'; // Asegúrate de reemplazar 10.0.2.2 por la IP adecuada si es necesario
+      final url = 'http://52.44.178.25:8080/api/user/$uid'; // Asegúrate de reemplazar 52.44.178.25 por la IP adecuada si es necesario
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
@@ -104,7 +104,7 @@ Future<void> _updateUserName() async {
     }
     final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
     final String uid = payload['uid'];
-    final url = 'http://10.0.2.2:8080/api/user/$uid';
+    final url = 'http://52.44.178.25:8080/api/user/$uid';
     try {
       final response = await http.put(
         Uri.parse(url),
