@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -36,16 +35,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
 
-      final url = 'http://52.44.178.25:8080/api/user/$uid'; // Asegúrate de reemplazar 52.44.178.25 por la IP adecuada si es necesario
+      final url = 'http://localhost:8080/api/user/$uid';
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
-          'Authorization': 'Bearer $token', // Asegúrate de enviar el token en la cabecera si es necesario
+          'Authorization': 'Bearer $token',
         });
         if (response.statusCode == 200) {
           final responseBody = jsonDecode(response.body);
           setState(() {
-            nombreUsuario = responseBody['nombre']; // Asegúrate de que el campo 'nombre' exista en la respuesta
+            nombreUsuario = responseBody['nombre'];
           });
         } else {
           print('Error al obtener datos del usuario: ${response.body}');
@@ -58,7 +57,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-   void _showPersonalDetailsAlert() {
+  Future<void> _updateUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        print('El token no es válido');
+        return;
+      }
+      final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+      final String uid = payload['uid'];
+      final url = 'http://localhost:8080/api/user/$uid';
+      try {
+        final response = await http.put(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({'nombre': _nameController.text}),
+        );
+        if (response.statusCode == 200) {
+          print('Nombre actualizado con éxito');
+          await _fetchUserData();
+        } else {
+          print('Error al actualizar el nombre: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        print('El token no es válido');
+        return;
+      }
+      final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+      final String uid = payload['uid'];
+      final url = 'http://localhost:8080/api/user/$uid';
+      try {
+        final response = await http.delete(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+        if (response.statusCode == 200) {
+          print('Cuenta eliminada con éxito');
+          Navigator.of(context).pushReplacementNamed('/login');
+        } else {
+          print('Error al eliminar la cuenta: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  void _showPersonalDetailsAlert() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -93,40 +160,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-Future<void> _updateUserName() async {
-  final prefs = await SharedPreferences.getInstance();
-  final String? token = prefs.getString('token');
-  if (token != null) {
-    final parts = token.split('.');
-    if (parts.length != 3) {
-      print('El token no es válido');
-      return;
-    }
-    final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
-    final String uid = payload['uid'];
-    final url = 'http://52.44.178.25:8080/api/user/$uid';
-    try {
-      final response = await http.put(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({'nombre': _nameController.text}),
-      );
-      if (response.statusCode == 200) {
-        print('Nombre actualizado con éxito');
-        await _fetchUserData(); // Recargar los datos del usuario después de una actualización exitosa
-      } else {
-        print('Error al actualizar el nombre: ${response.body}');
-      }
-    } catch (e) {
-      print('Error en la solicitud: $e');
-    }
-  } else {
-    print('Token no encontrado');
+  void _showDeleteAccountAlert() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Eliminar cuenta'),
+          content: Text('¿Está seguro de que desea eliminar su cuenta? Esta acción no se puede deshacer.'),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Eliminar'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _deleteAccount();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -150,19 +209,17 @@ Future<void> _updateUserName() async {
             Text(nombreUsuario, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             _buildProfileOption(context, Icons.notifications, 'Notificaciones', () {
-              // Navega a NotificationsScreen cuando se toca "Notificaciones"
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationsScreen()),
               );
             }),
             _buildProfileOption(context, Icons.person, 'Cambiar nombre de usuario', _showPersonalDetailsAlert),
-            
             _buildProfileOption(context, Icons.location_on, 'Ubicación', () {}),
             _buildProfileOption(context, Icons.payment, 'Método de pago', () {}),
             _buildProfileOption(context, Icons.settings, 'Configuración', () {}),
             _buildProfileOption(context, Icons.help, 'Ayuda', () {}),
-            _buildProfileOption(context, Icons.exit_to_app, 'Salir', () {}),
+            _buildProfileOption(context, Icons.exit_to_app, 'Eliminar cuenta', _showDeleteAccountAlert),
           ],
         ),
       ),
