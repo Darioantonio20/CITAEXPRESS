@@ -30,7 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    const url = 'http://localhost:8080/api/user/'; // Cambia esta URL según tu configuración
+    const url = 'http://52.44.178.25:8080/api/user/'; // Cambia esta URL según tu configuración
 
     try {
       final response = await http.post(

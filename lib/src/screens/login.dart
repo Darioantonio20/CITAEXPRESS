@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    const url = 'http://localhost:8080/api/auth/login';
+    const url = 'http://52.44.178.25:8080/api/auth/login';
 
     try {
       final response = await http.post(

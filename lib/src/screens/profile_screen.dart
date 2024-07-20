@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
 
-      final url = 'http://localhost:8080/api/user/$uid';
+      final url = 'http://52.44.178.25:8080/api/user/$uid';
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
@@ -64,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final String? token = prefs.getString('token');
     final String? providerId = prefs.getString('providerId');
     if (token != null && providerId != null) {
-      final url = 'http://localhost:8080/api/providers/$providerId';
+      final url = 'http://52.44.178.25:8080/api/providers/$providerId';
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
     if (token != null) {
-      final url = 'http://localhost:8080/api/providers/$providerId';
+      final url = 'http://52.44.178.25:8080/api/providers/$providerId';
       try {
         final response = await http.put(
           Uri.parse(url),
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
     if (token != null) {
-      final url = 'http://localhost:8080/api/providers/$providerId';
+      final url = 'http://52.44.178.25:8080/api/providers/$providerId';
       try {
         final response = await http.delete(
           Uri.parse(url),
@@ -150,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
-      final url = 'http://localhost:8080/api/user/$uid';
+      final url = 'http://52.44.178.25:8080/api/user/$uid';
       try {
         final response = await http.put(
           Uri.parse(url),
@@ -185,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
-      final url = 'http://localhost:8080/api/user/$uid';
+      final url = 'http://52.44.178.25:8080/api/user/$uid';
       try {
         final response = await http.delete(
           Uri.parse(url),

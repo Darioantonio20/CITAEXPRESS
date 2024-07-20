@@ -19,7 +19,7 @@ class _AllItemsScreenState extends State<AllItemsScreen> {
   }
 
   Future<void> fetchProviders() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/api/providers'));
+    final response = await http.get(Uri.parse('http://52.44.178.25:8080/api/providers'));
     if (response.statusCode == 200) {
       setState(() {
         providers = json.decode(response.body)['providers'];
