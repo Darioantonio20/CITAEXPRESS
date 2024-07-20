@@ -14,12 +14,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
-  String nombreUsuario = 'Cargando...';
+  final TextEditingController _providerNameController = TextEditingController();
+  String nombreUsuarioYProveedor = 'Cargando...';
+  List<dynamic> providers = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _fetchProvidersData();
   }
 
   Future<void> _fetchUserData() async {
@@ -44,10 +47,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (response.statusCode == 200) {
           final responseBody = jsonDecode(response.body);
           setState(() {
-            nombreUsuario = responseBody['nombre'];
+            nombreUsuarioYProveedor = responseBody['nombre'];
           });
         } else {
           print('Error al obtener datos del usuario: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  Future<void> _fetchProvidersData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final url = 'http://localhost:8080/api/providers';
+
+      try {
+        final response = await http.get(Uri.parse(url), headers: {
+          'Authorization': 'Bearer $token',
+        });
+        if (response.statusCode == 200) {
+          final responseBody = jsonDecode(response.body);
+          setState(() {
+            providers = responseBody.map((provider) => provider['providers']).toList();
+          });
+        } else {
+          print('Error al obtener datos de los proveedores: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  Future<void> _fetchProviderById(String providerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final url = 'http://localhost:8080/api/provider/$providerId';
+
+      try {
+        final response = await http.get(Uri.parse(url), headers: {
+          'Authorization': 'Bearer $token',
+        });
+        if (response.statusCode == 200) {
+          final responseBody = jsonDecode(response.body);
+          setState(() {
+            nombreUsuarioYProveedor += ' - ' + responseBody['nameProvider'];
+          });
+        } else {
+          print('Error al obtener datos del proveedor: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  Future<void> _updateProviderName(String providerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final url = 'http://localhost:8080/api/provider/$providerId';
+      try {
+        final response = await http.put(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({'nameProvider': _providerNameController.text}),
+        );
+        if (response.statusCode == 200) {
+          print('Nombre del proveedor actualizado con éxito');
+          await _fetchProvidersData();
+        } else {
+          print('Error al actualizar el nombre del proveedor: ${response.body}');
         }
       } catch (e) {
         print('Error en la solicitud: $e');
@@ -160,6 +243,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showProviderDetailsAlert(String providerId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Detalles del proveedor'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Ingrese el nuevo nombre del proveedor:'),
+              TextField(
+                controller: _providerNameController,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Guardar'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _updateProviderName(providerId);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showDeleteAccountAlert() {
     showDialog(
       context: context,
@@ -206,12 +324,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Colors.grey,
             ),
             SizedBox(height: 10),
-            Text(nombreUsuario, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(nombreUsuarioYProveedor, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             _buildProfileOption(context, Icons.notifications, 'Notificaciones', () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationsScreen()),
+                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
               );
             }),
             _buildProfileOption(context, Icons.person, 'Cambiar nombre de usuario', _showPersonalDetailsAlert),
@@ -220,6 +338,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildProfileOption(context, Icons.settings, 'Configuración', () {}),
             _buildProfileOption(context, Icons.help, 'Ayuda', () {}),
             _buildProfileOption(context, Icons.exit_to_app, 'Eliminar cuenta', _showDeleteAccountAlert),
+            if (providers.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: providers.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(providers[index]['nameProvider']),
+                      onTap: () {
+                        _fetchProviderById(providers[index]['id']);
+                      },
+                      onLongPress: () {
+                        _showProviderDetailsAlert(providers[index]['id']);
+                      },
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class AllItemsScreen extends StatelessWidget {
+class AllItemsScreen extends StatefulWidget {
   const AllItemsScreen({Key? key}) : super(key: key);
+
+  @override
+  _AllItemsScreenState createState() => _AllItemsScreenState();
+}
+
+class _AllItemsScreenState extends State<AllItemsScreen> {
+  List<dynamic> providers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProviders();
+  }
+
+  Future<void> fetchProviders() async {
+    final response = await http.get(Uri.parse('http://localhost:8080/api/providers'));
+    if (response.statusCode == 200) {
+      setState(() {
+        providers = json.decode(response.body)['providers'];
+      });
+    } else {
+      throw Exception('Failed to load providers');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,81 +56,28 @@ class AllItemsScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
-                children: [
-                  _buildDoctorCard(
-                    'Dr. Jesús Ruíz',
-                    'La salud de cada uno de mis pacientes, es vital para ayudar a recuperarse y tener una vida sana.',
-                    5.0,
-                    context, // Pasa el contexto aquí
-                  ),
-                  // Puedes agregar más _buildDoctorCard aquí conforme lo necesites
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Servicio')),
+                    DataColumn(label: Text('Ubicación')),
+                    DataColumn(label: Text('Teléfono')),
+                  ],
+                  rows: providers.map((provider) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(provider['serviceProvider'])),
+                        DataCell(Text(provider['ubication'])),
+                        DataCell(Text(provider['numberTelProvider'].toString())),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDoctorCard(String name, String description, double rating, BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.grey[300], // Fondo gris como marcador de posición
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(description),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.amber, size: 20),
-                    const SizedBox(width: 4),
-                    Text(rating.toString(), style: const TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/appointment_details');
-            },
-            child: const Text(
-              'Reservar',
-              style: TextStyle(color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF0B8FAC),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

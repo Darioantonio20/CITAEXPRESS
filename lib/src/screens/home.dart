@@ -39,7 +39,7 @@ void didChangeDependencies() {
       }
       final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
       final String uid = payload['uid'];
-      final url = 'http://localhost:8080/api/user/$uid';
+      final url = 'http://52.44.178.25:8080/api/user/$uid';
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
@@ -188,7 +188,7 @@ void didChangeDependencies() {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Todos los doctores', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text('Servicios especificos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/all_items'); 
@@ -201,8 +201,8 @@ void didChangeDependencies() {
                 ],
               ),
               _buildDoctorCard(
-                'Dr. Jesúruga',
-                'La salud de cada uno de mis pacientes, es vital para ayudar a recuperarse y tener una vida sana.',
+                'Más servicios',
+                'Puedes encontrar muchos servicios que quizas te interesen.',
                 5.0,
               ),
             ],
