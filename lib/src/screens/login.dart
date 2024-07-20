@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -26,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    const url = 'http://localhost:8080/api/auth/login'; // URL correcta
+    const url = 'http://localhost:8080/api/auth/login';
 
     try {
       final response = await http.post(
@@ -39,76 +38,79 @@ class _LoginScreenState extends State<LoginScreen> {
           'password': password,
         }),
       );
-     
+
       if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        final String token = responseBody['token'];
 
-       final responseBody = jsonDecode(response.body);
-       final String token = responseBody['token'];
-
-  // Obtén una instancia de SharedPreferences
         final prefs = await SharedPreferences.getInstance();
 
-  // Guarda el token usando SharedPreferences
+        // Decodifica el token y guarda el providerId en SharedPreferences
+        final parts = token.split('.');
+        if (parts.length != 3) {
+          print('El token no es válido');
+          return;
+        }
+        final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+        final String providerId = payload['uid'];
+
         await prefs.setString('token', token);
-        // Si el servidor devuelve una respuesta 200 OK, parsea el JSON
-       
+        await prefs.setString('providerId', providerId);
+
         print('Inicio de sesión exitoso: $responseBody');
-        // Mostrar una alerta de éxito y redirigir a la vista de home
+
         _showAlertDialog('Inicio de sesión exitoso', 'El usuario ha iniciado sesión correctamente.', true);
       } else {
-        // Si el servidor no devuelve una respuesta 200 OK, lanza un error.
         print('Error en el inicio de sesión: ${response.body}');
-        // Mostrar una alerta de error
         _showAlertDialog('Error', 'Usuario no registrado o verificar los campos.', false);
       }
     } catch (e) {
       print('Error en la solicitud: $e');
-      // Mostrar una alerta de error
       _showAlertDialog('Error', 'Hubo un problema con la solicitud. Inténtalo de nuevo. $e', false);
     }
   }
 
   void _showAlertDialog(String title, String message, bool success) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              success ? Icons.check_circle : Icons.error,
-              color: success ? Colors.green : Colors.red,
-            ),
-            SizedBox(width: 10),
-            Text(
-              title,
-              style: TextStyle(
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                success ? Icons.check_circle : Icons.error,
                 color: success ? Colors.green : Colors.red,
               ),
+              SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  color: success ? Colors.green : Colors.red,
+                ),
+              ),
+            ],
+          ),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: success ? Colors.green : Colors.red,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (success) {
+                  Navigator.of(context).pushReplacementNamed('/home');
+                }
+              },
             ),
           ],
-        ),
-        content: Text(message),
-        actions: [
-          TextButton(
-            child: Text(
-              'OK',
-              style: TextStyle(
-                color: success ? Colors.green : Colors.red,
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-              if (success) {
-                Navigator.of(context).pushReplacementNamed('/home');
-              }
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   hintText: 'Ingrese su correo',
                 ),
-                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), 
               ),
               const SizedBox(height: 20),
               TextField(
@@ -178,14 +180,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Ingrese su contraseña',
                   suffixIcon: const Icon(Icons.visibility_off),
                 ),
-                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), // Estilo del texto dentro del input
+                style: const TextStyle(color: Color.fromRGBO(11, 143, 172, 1.0)), 
               ),
               const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    // Acción para olvidar contraseña
+                    
                   },
                   child: const Text(
                     'Olvide mi contraseña',
@@ -223,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     iconSize: 40,
                     onPressed: () {
-                      // Acción para iniciar sesión con Facebook
+                      
                     },
                   ),
                   const SizedBox(width: 20),
@@ -236,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     iconSize: 40,
                     onPressed: () {
-                      // Acción para iniciar sesión con Google
+                      
                     },
                   ),
                 ],
@@ -248,7 +250,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text('No tengo una cuenta?'),
                   TextButton(
                     onPressed: () {
-                      // Navegar a la vista de registro
                       Navigator.of(context).pushNamed('/register');
                     },
                     style: TextButton.styleFrom(

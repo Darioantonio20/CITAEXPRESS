@@ -1,4 +1,3 @@
-// profile_screen.dart
 import 'package:flutter_application_1/src/screens/notifications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,13 +15,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _providerNameController = TextEditingController();
   String nombreUsuarioYProveedor = 'Cargando...';
-  List<dynamic> providers = [];
+  String providerName = 'Cargando...';
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
-    _fetchProvidersData();
+    _fetchProviderData();
   }
 
   Future<void> _fetchUserData() async {
@@ -60,11 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _fetchProvidersData() async {
+  Future<void> _fetchProviderData() async {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
-    if (token != null) {
-      final url = 'http://localhost:8080/api/providers';
+    final String? providerId = prefs.getString('providerId');
+    if (token != null && providerId != null) {
+      final url = 'http://localhost:8080/api/providers/$providerId';
 
       try {
         final response = await http.get(Uri.parse(url), headers: {
@@ -73,33 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (response.statusCode == 200) {
           final responseBody = jsonDecode(response.body);
           setState(() {
-            providers = responseBody.map((provider) => provider['providers']).toList();
-          });
-        } else {
-          print('Error al obtener datos de los proveedores: ${response.body}');
-        }
-      } catch (e) {
-        print('Error en la solicitud: $e');
-      }
-    } else {
-      print('Token no encontrado');
-    }
-  }
-
-  Future<void> _fetchProviderById(String providerId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
-    if (token != null) {
-      final url = 'http://localhost:8080/api/provider/$providerId';
-
-      try {
-        final response = await http.get(Uri.parse(url), headers: {
-          'Authorization': 'Bearer $token',
-        });
-        if (response.statusCode == 200) {
-          final responseBody = jsonDecode(response.body);
-          setState(() {
-            nombreUsuarioYProveedor += ' - ' + responseBody['nameProvider'];
+            providerName = responseBody['nameProvider'];
           });
         } else {
           print('Error al obtener datos del proveedor: ${response.body}');
@@ -108,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         print('Error en la solicitud: $e');
       }
     } else {
-      print('Token no encontrado');
+      print('Token o providerId no encontrado');
     }
   }
 
@@ -116,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
     if (token != null) {
-      final url = 'http://localhost:8080/api/provider/$providerId';
+      final url = 'http://localhost:8080/api/providers/$providerId';
       try {
         final response = await http.put(
           Uri.parse(url),
@@ -128,9 +102,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         if (response.statusCode == 200) {
           print('Nombre del proveedor actualizado con éxito');
-          await _fetchProvidersData();
+          await _fetchProviderData();
         } else {
           print('Error al actualizar el nombre del proveedor: ${response.body}');
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+      }
+    } else {
+      print('Token no encontrado');
+    }
+  }
+
+  Future<void> _deleteProvider(String providerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token != null) {
+      final url = 'http://localhost:8080/api/providers/$providerId';
+      try {
+        final response = await http.delete(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+        if (response.statusCode == 200) {
+          print('Proveedor eliminado con éxito');
+        } else {
+          print('Error al eliminar el proveedor: ${response.body}');
         }
       } catch (e) {
         print('Error en la solicitud: $e');
@@ -305,6 +304,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showDeleteProviderAlert(String providerId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Eliminar proveedor'),
+          content: Text('¿Está seguro de que desea eliminar este proveedor? Esta acción no se puede deshacer.'),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Eliminar'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _deleteProvider(providerId);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -325,6 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 10),
             Text(nombreUsuarioYProveedor, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(providerName, style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             _buildProfileOption(context, Icons.notifications, 'Notificaciones', () {
               Navigator.push(
@@ -338,23 +365,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildProfileOption(context, Icons.settings, 'Configuración', () {}),
             _buildProfileOption(context, Icons.help, 'Ayuda', () {}),
             _buildProfileOption(context, Icons.exit_to_app, 'Eliminar cuenta', _showDeleteAccountAlert),
-            if (providers.isNotEmpty)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: providers.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(providers[index]['nameProvider']),
-                      onTap: () {
-                        _fetchProviderById(providers[index]['id']);
-                      },
-                      onLongPress: () {
-                        _showProviderDetailsAlert(providers[index]['id']);
-                      },
-                    );
-                  },
-                ),
-              ),
           ],
         ),
       ),
